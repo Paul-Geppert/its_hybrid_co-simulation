@@ -1,0 +1,6 @@
+[submodule "marvis"]
+	path = marvis
+	url = git@github.com:Paul-Geppert/marvis.git
+[submodule "ns-3_c-v2x"]
+	path = ns-3_c-v2x
+	url = git@github.com:Paul-Geppert/ns-3_c-v2x.git
