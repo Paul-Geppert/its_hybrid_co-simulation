@@ -310,8 +310,8 @@ pFactory.SetStartRbPscchPool (0)
 pFactory.SetDataTxP0 (-4)
 pFactory.SetDataTxAlpha (0.9)
 
-preconfiguration.v2xPreconfigFreqList.freq[0].v2xCommTxPoolList.pools[0] = pFactory.CreatePool ()
-preconfiguration.v2xPreconfigFreqList.freq[0].v2xCommRxPoolList.pools[0] = pFactory.CreatePool ()
+preconfiguration.v2xPreconfigFreqList.freq[0].v2xCommTxPoolList.SetPoolAt(pFactory.CreatePool (), 0)
+preconfiguration.v2xPreconfigFreqList.freq[0].v2xCommRxPoolList.SetPoolAt(pFactory.CreatePool (), 0)
 ueSidelinkConfiguration.SetSlV2xPreconfiguration (preconfiguration) 
 
 # // Print Configuration
