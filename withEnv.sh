@@ -31,4 +31,4 @@ export COLOREDLOGS_AUTO_INSTALL="true"
 export PYLXD_WARNINGS="none"
 
 PYTHON_TO_USE=/home/paul/miniconda3/envs/ma3.8/bin/python3
-$PYTHON_TO_USE
+$PYTHON_TO_USE $1
