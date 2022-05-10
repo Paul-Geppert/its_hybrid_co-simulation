@@ -1,0 +1,27 @@
+{
+    "app_config": {
+        "converter_file_path": "/converter-so/converter"
+    },
+    "mqtt_config": {
+        "mqtt_settings": {
+            "client_id": "thesis-test",
+            "max_queue_size": 10000,
+            "reconnect_seconds_min": 1,
+            "reconnect_seconds_max": 5
+        },
+        "servers": [
+            {
+                "id": "Local Test Server",
+                "host": "mqtt_server",
+                "port": 1883,
+                "user": "test_user",
+                "pw": "pwd",
+                "auth": {},
+                "topics": {
+                    "mapem": "map/thesis",
+                    "spatem":"spat/thesis"
+                }
+            }
+        ]
+    }
+}
