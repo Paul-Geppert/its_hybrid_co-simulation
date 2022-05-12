@@ -18,6 +18,9 @@ def parseArgs():
     parser.add_argument('--interface', '-i',
             default='v2x',
             help='the interface to read messages from. Default: v2x')
+    parser.add_argument('--cv2x-udp-port', '-p',
+            default=20001,
+            help='the UDP port C-V2X messages will be sent to. Default: 20001 ')
     parser.add_argument('--log-file', '-l',
             default='',
             help='the location of the log file. If not specified, stderr is used. Default: stderr is used')
@@ -80,5 +83,13 @@ def main():
     p = Process(target=enterDrivingLoop, args=(mobility_id, sharedLCState))
     p.start()
 
-    capture = pyshark.LiveCapture(interface=args.interface)
+    using_cv2x = os.environ["USING_CV2X"] == "True"
+
+    if using_cv2x:
+        logger.info("Vehicle uses CV2X")
+        capture = pyshark.LiveCapture(interface=args.interface, decode_as={f'udp.port=={args.cv2x_udp_port}':'its'})
+    else:
+        logger.info("Vehicle uses ITS-G5")
+        capture = pyshark.LiveCapture(interface=args.interface)
+    
     capture.apply_on_packets(handleV2XMessage)

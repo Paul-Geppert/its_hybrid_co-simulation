@@ -26,7 +26,7 @@ def main():
     rsu = DockerNode('rsu', docker_build_dir='./rsu')
     cars = []
     for i in range(5):
-        cars.append(DockerNode(f'car_{i}', docker_build_dir='./car', environment_variables=[f"MOBILITY_ID=car_{i}"]))
+        cars.append(DockerNode(f'car_{i}', docker_build_dir='./car', environment_variables=[f"MOBILITY_ID=car_{i}", f"USING_CV2X={i % 2 == 1}"]))
 
     its_g5_channel = net_1.create_channel(channel_type=WiFiChannel, frequency=5855, channel_width=10, tx_power=25.0,
                 standard=WiFiChannel.WiFiStandard.WIFI_802_11p, data_rate=WiFiChannel.WiFiDataRate.OFDM_RATE_BW_6Mbps)
@@ -35,12 +35,18 @@ def main():
     its_g5_channel.connect(train, ifname="v2x")
     its_g5_channel.connect(rsu, ifname="v2x")
     its_g5_channel.connect(converter, ifname="i_conv_recv")
-    for car in cars:
+
+    # Add cars with even ids as ITS-G5 vehicles
+    for car in cars[::2]:
         its_g5_channel.connect(car, ifname="v2x")
 
     # C-V2X network
     cv2x_channel = net_2.create_channel(channel_type=CV2XChannel)
     cv2x_channel.connect(converter, ifname="i_conv_send")
+
+    # Add cars with odd ids as C-V2X vehicles
+    for car in cars[1::2]:
+        cv2x_channel.connect(car, ifname="v2x")
 
     # Ethernet / CSMA network
     csma_channel = net_3.create_channel(delay='10ms', channel_type=CSMAChannel)

@@ -1,4 +1,4 @@
-from .generator import main
+from .car import main
 
 if __name__ == "__main__":
     try:
