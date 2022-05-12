@@ -2,6 +2,7 @@ import os
 import random
 
 from marvis.channel.csma import CSMAChannel
+from marvis.channel.cv2x import CV2XChannel
 from marvis.channel.wifi import WiFiChannel
 from marvis.mobility_input import SUMOMobilityInput
 from marvis import ArgumentParser, Network, DockerNode, Scenario
@@ -9,8 +10,13 @@ from marvis import ArgumentParser, Network, DockerNode, Scenario
 def main():
     scenario = Scenario()
 
-    net_1 = Network("10.0.0.0", "255.255.0.0")
+    # ns-3 helper for C-V2X block the following IP ranges:
+    # 7.0.0.0 / 255.0.0.0
+    # 10.0.0.0 / 255.255.255.252
+    # 12.0.0.0 / 255.255.255.252
+    net_1 = Network("15.0.0.0", "255.255.0.0")
     net_2 = Network("20.0.0.0", "255.255.0.0")
+    net_3 = Network("30.0.0.0", "255.255.0.0")
 
     mqtt_server = DockerNode('mqtt_server', docker_build_dir='./mqtt_server', exposed_ports={1883:1884})
     converter = DockerNode('converter', docker_build_dir='./converter')
@@ -25,19 +31,26 @@ def main():
     its_g5_channel = net_1.create_channel(channel_type=WiFiChannel, frequency=5855, channel_width=10, tx_power=25.0,
                 standard=WiFiChannel.WiFiStandard.WIFI_802_11p, data_rate=WiFiChannel.WiFiDataRate.OFDM_RATE_BW_6Mbps)
 
+    # ITS-G5 network
     its_g5_channel.connect(train, ifname="v2x")
     its_g5_channel.connect(rsu, ifname="v2x")
     its_g5_channel.connect(converter, ifname="i_conv_recv")
     for car in cars:
         its_g5_channel.connect(car, ifname="v2x")
 
-    csma_channel = net_2.create_channel(delay='10ms', channel_type=CSMAChannel)
-    csma_channel.connect(converter, ifname="i_conv_send")
+    # C-V2X network
+    cv2x_channel = net_2.create_channel(channel_type=CV2XChannel)
+    cv2x_channel.connect(converter, ifname="i_conv_send")
+
+    # Ethernet / CSMA network
+    csma_channel = net_3.create_channel(delay='10ms', channel_type=CSMAChannel)
+    csma_channel.connect(converter, ifname="i_conv_eth")
     csma_channel.connect(mqtt_server, ifname="i_mqtt")
     csma_channel.connect(receiver, ifname="i_receiver")
 
     scenario.add_network(net_1)
     scenario.add_network(net_2)
+    scenario.add_network(net_3)
 
     sumo = SUMOMobilityInput(sumo_cmd=f"{os.environ['SUMO_HOME']}/bin/sumo-gui", config_path="./scenario/paper.sumocfg", step_length=0.5, rpc_server_config=("172.17.0.1", 23404, False))
     # Map the docker containers to SUMO objects
