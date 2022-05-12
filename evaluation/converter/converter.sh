@@ -2,7 +2,7 @@
 
 cd /
 
-python3 -m converter -i i_conv_recv -c /converter/config.json
+python3 -m converter -ii i_conv_recv -ic i_conv_send -c /converter/config.json
 
 while true
 do

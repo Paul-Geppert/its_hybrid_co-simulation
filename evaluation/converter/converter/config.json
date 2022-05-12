@@ -1,6 +1,8 @@
 {
     "app_config": {
-        "converter_file_path": "/converter-so/converter"
+        "converter_file_path": "/converter-so/converter",
+        "cv2x_ip_base": "225.0.0.0",
+        "cv2x_udp_port": 20001
     },
     "mqtt_config": {
         "mqtt_settings": {
