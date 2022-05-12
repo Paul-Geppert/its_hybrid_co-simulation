@@ -2,7 +2,7 @@
 
 echo "CAR started"
 
-until ip a show v2x &> /dev/null
+until ip a show v2x > /dev/null 2>&1
 do
   echo 'waiting for network connection ...'
   sleep 1
