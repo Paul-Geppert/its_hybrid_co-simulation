@@ -21,15 +21,16 @@ RUN apt update \
     python3-pip iproute2 iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://1.eu.dl.wireshark.org/src/wireshark-3.6.5.tar.xz
-RUN tar -xf wireshark-3.6.5.tar.xz
+RUN wget https://1.eu.dl.wireshark.org/src/wireshark-3.6.5.tar.xz \
+    && tar -xf wireshark-3.6.5.tar.xz
 
-RUN mkdir wireshark-3.6.5/build
-
-WORKDIR /wireshark-3.6.5/build
-RUN cmake -DBUILD_wireshark=OFF ..
-RUN make -j 4
-RUN make install
+RUN mkdir wireshark-3.6.5/build \
+    && cd /wireshark-3.6.5/build \
+    && cmake -DBUILD_wireshark=OFF .. \
+    && make -j 4 \
+    && make install \
+    && rm /wireshark-3.6.5.tar.xz \
+    && rm -r /wireshark-3.6.5
 
 RUN pip3 install pyshark
 
