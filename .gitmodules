@@ -4,3 +4,6 @@
 [submodule "ns-3_c-v2x"]
 	path = ns-3_c-v2x
 	url = git@github.com:Paul-Geppert/ns-3_c-v2x.git
+[submodule "sidelink"]
+	path = sidelink
+	url = git@github.com:Paul-Geppert/sidelink.git
