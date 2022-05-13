@@ -9,6 +9,8 @@ from marvis import ArgumentParser, Network, DockerNode, Scenario
 
 def main():
     NUM_CARS = 5
+    USE_SDR = True
+    CAR_SDR_ID = 0  # Should be even (all cars with even ids use C-V2X)
 
     scenario = Scenario()
 
@@ -21,14 +23,47 @@ def main():
     net_3 = Network("30.0.0.0", "255.255.0.0")
 
     mqtt_server = DockerNode('mqtt_server', docker_build_dir='./mqtt_server', exposed_ports={1883:1884})
-    converter = DockerNode('converter', docker_build_dir='./converter')
+    if USE_SDR:
+        converter = DockerNode(
+            'converter_with_sdr',
+            docker_build_dir='./converter',
+            dockerfile="sdr.Dockerfile",
+            devices=["/dev/bus/usb/002/002"],
+            environment_variables={"SDR_MASTER": "True"}
+        )
+    else:
+        converter = DockerNode('converter', docker_build_dir='./converter', dockerfile="sim.Dockerfile")
     receiver = DockerNode('receiver', docker_build_dir='./receiver')
 
     train = DockerNode('train', docker_build_dir='./train', environment_variables=["MOBILITY_ID=train"])
     rsu = DockerNode('rsu', docker_build_dir='./rsu')
+    
     cars = []
+    # Car 0 might use C-V2X via SDR otherwise C-V2X via ns-3
+    # Cars 2,4,6, ... use C-V2X via ns-3
+    # Cars 1,3,5, ... use ITS-G5 via ns-3
+
     for i in range(NUM_CARS):
-        cars.append(DockerNode(f'car_{i}', docker_build_dir='./car', environment_variables=[f"MOBILITY_ID=car_{i}", f"USING_CV2X={i % 2 == 1}"]))
+        if USE_SDR and i == CAR_SDR_ID:
+            car_sdr = DockerNode(
+                f'car_{i}',
+                docker_build_dir='./car',
+                dockerfile="sdr.Dockerfile",
+                environment_variables={"MOBILITY_ID": f"car_{i}", "USING_CV2X": "True", "SDR_MASTER": "False"},
+                devices=["/dev/bus/usb/002/003"],
+                volumes={"/home/paul/masterarbeit/its_simulation_thesis/evaluation/logs/":"/sidelink/logs/"},
+            )
+            scenario.add_standalone_node(car_sdr)
+            cars.append(car_sdr)
+        else:
+            cars.append(DockerNode(
+                f'car_{i}',
+                docker_build_dir='./car',
+                dockerfile="sim.Dockerfile",
+                environment_variables=[f"MOBILITY_ID=car_{i}", f"USING_CV2X={i % 2 == 0}"]
+            ))
+
+    ################## Adding ITS-G5 ##################
 
     its_g5_channel = net_1.create_channel(channel_type=WiFiChannel, frequency=5855, channel_width=10, tx_power=25.0,
                 standard=WiFiChannel.WiFiStandard.WIFI_802_11p, data_rate=WiFiChannel.WiFiDataRate.OFDM_RATE_BW_6Mbps)
@@ -38,23 +73,37 @@ def main():
     its_g5_channel.connect(rsu, ifname="v2x")
     its_g5_channel.connect(converter, ifname="i_conv_recv")
 
-    # Add cars with even ids as ITS-G5 vehicles
-    for car in cars[::2]:
-        its_g5_channel.connect(car, ifname="v2x")
+    # Add cars with odd ids as ITS-G5 vehicles
+    for idx, car in enumerate(cars):
+        if idx == CAR_SDR_ID:
+            continue
+        if idx % 2 == 1:
+            its_g5_channel.connect(car, ifname="v2x")
 
-    # C-V2X network
+
+    ################## Adding C-V2X ##################
+
     cv2x_channel = net_2.create_channel(channel_type=CV2XChannel)
+
     cv2x_channel.connect(converter, ifname="i_conv_send")
 
-    # Add cars with odd ids as C-V2X vehicles
-    for car in cars[1::2]:
-        cv2x_channel.connect(car, ifname="v2x")
+    # Add cars with even ids as C-V2X vehicles
 
-    # Ethernet / CSMA network
+    for idx, car in enumerate(cars):
+        if idx == CAR_SDR_ID:
+            continue
+        if idx % 2 == 0:
+            cv2x_channel.connect(car, ifname="v2x")
+
+
+    #################### Ethernet ####################
+
     csma_channel = net_3.create_channel(delay='10ms', channel_type=CSMAChannel)
     csma_channel.connect(converter, ifname="i_conv_eth")
     csma_channel.connect(mqtt_server, ifname="i_mqtt")
     csma_channel.connect(receiver, ifname="i_receiver")
+
+    ################ Wrap-Up and Start ################
 
     scenario.add_network(net_1)
     scenario.add_network(net_2)
