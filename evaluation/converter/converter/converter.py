@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 import pyshark
 import socket
 
@@ -48,7 +49,10 @@ def main():
             return
 
         # Send packet on C-V2X
-        cv2x_socket.sendto(bytes.fromhex(packet.its_raw.value), (cv2x_sidelink_addr, cv2x_udp_port))
+        cv2x_socket_ns3.sendto(bytes.fromhex(packet.its_raw.value), (cv2x_sidelink_addr_ns3, cv2x_udp_port))
+
+        if "USING_SDR" in os.environ:
+            cv2x_socket_sdr.sendto(bytes.fromhex(packet.its_raw.value), (cv2x_sidelink_addr_sdr, cv2x_udp_port))
 
         # Convert supported messages to XMl and send them to the MQTT server
         message_type_id = packet.its.ItsPduHeader_element.messageID.main_field.int_value
@@ -109,8 +113,15 @@ def main():
     # Open socket to send C-V2X messages to
     cv2x_ip_base = config['app_config']['cv2x_ip_base']
     cv2x_udp_port = config['app_config']['cv2x_udp_port']
-    cv2x_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-    cv2x_sidelink_addr = get_sidelink_ip(cv2x_ip_base, args.interface_cv2x.encode())
+
+    logger.info("Using C-V2X via ns-3")
+    cv2x_socket_ns3 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    cv2x_sidelink_addr_ns3 = get_sidelink_ip(cv2x_ip_base, args.interface_cv2x.encode())
+
+    logger.info("Using C-V2X via SDR")
+    cv2x_socket_sdr = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    cv2x_socket_sdr.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    cv2x_sidelink_addr_sdr = "10.0.2.255"
 
     capture = pyshark.LiveCapture(interface=args.interface_itsg5, include_raw=True, use_json=True)
     capture.apply_on_packets(resend_as_cv2x_and_forward_to_mqtt)
