@@ -1,3 +1,6 @@
+# Prepare the Docker container for CAR
+# In case the car does not use SDRs use this Dockerfile
+
 FROM ubuntu:20.04
 
 # We need to manually build TShark and not install it via apt, because the version on apt is to old.

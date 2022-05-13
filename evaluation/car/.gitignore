@@ -1,0 +1,2 @@
+# Ignore sidelink as this is included as git submodule at the repository root
+sidelink/
