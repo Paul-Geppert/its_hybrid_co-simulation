@@ -8,6 +8,8 @@ from marvis.mobility_input import SUMOMobilityInput
 from marvis import ArgumentParser, Network, DockerNode, Scenario
 
 def main():
+    NUM_CARS = 5
+
     scenario = Scenario()
 
     # ns-3 helper for C-V2X block the following IP ranges:
@@ -25,7 +27,7 @@ def main():
     train = DockerNode('train', docker_build_dir='./train', environment_variables=["MOBILITY_ID=train"])
     rsu = DockerNode('rsu', docker_build_dir='./rsu')
     cars = []
-    for i in range(5):
+    for i in range(NUM_CARS):
         cars.append(DockerNode(f'car_{i}', docker_build_dir='./car', environment_variables=[f"MOBILITY_ID=car_{i}", f"USING_CV2X={i % 2 == 1}"]))
 
     its_g5_channel = net_1.create_channel(channel_type=WiFiChannel, frequency=5855, channel_width=10, tx_power=25.0,

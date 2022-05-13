@@ -10,6 +10,7 @@ RUN pip3 install pyshark paho-mqtt
 COPY ./converter/__main__.py /converter/
 COPY ./converter/config.json /converter/
 COPY ./converter/converter.py /converter/
+COPY ./converter/cv2x_helper.py /converter/
 COPY ./converter/mqtt_client.py /converter/
 COPY ./converter/mqtt_sender.py /converter/
 COPY ./converter-so/converter /converter-so/
