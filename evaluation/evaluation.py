@@ -9,7 +9,7 @@ from marvis import ArgumentParser, Network, DockerNode, Scenario
 
 def main():
     NUM_CARS = 5
-    USE_SDR = True
+    USE_SDR = False
     CAR_SDR_ID = 0  # Should be even (all cars with even ids use C-V2X)
 
     scenario = Scenario()
@@ -75,7 +75,7 @@ def main():
 
     # Add cars with odd ids as ITS-G5 vehicles
     for idx, car in enumerate(cars):
-        if idx == CAR_SDR_ID:
+        if USE_SDR and idx == CAR_SDR_ID:
             continue
         if idx % 2 == 1:
             its_g5_channel.connect(car, ifname="v2x")
@@ -90,7 +90,7 @@ def main():
     # Add cars with even ids as C-V2X vehicles
 
     for idx, car in enumerate(cars):
-        if idx == CAR_SDR_ID:
+        if USE_SDR and idx == CAR_SDR_ID:
             continue
         if idx % 2 == 0:
             cv2x_channel.connect(car, ifname="v2x")
