@@ -1,1 +1,12 @@
+# Log files
 *.log
+DlPdcpStats.txt
+DlRlcStats.txt
+UlPdcpStats.txt
+UlRlcStats.txt
+
+# Python Cache
+__pycache__/
+
+# Object files
+*.o
