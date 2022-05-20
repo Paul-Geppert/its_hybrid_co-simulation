@@ -88,13 +88,13 @@ def main():
     if len(args.log_file) > 0:
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                            datefmt='%m-%d-%y %H:%M:%S',
+                            datefmt='%y-%m-%d %H:%M:%S',
                             filename=args.log_file,
                             filemode='w')
     else:
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                            datefmt='%m-%d-%y %H:%M:%S')
+                            datefmt='%y-%m-%d %H:%M:%S')
 
     logger = logging.getLogger("Converter")
 
