@@ -1,8 +1,11 @@
 #!/bin/bash
 export DELAY_ROLE="RECEIVER"
 
-TIMESTAMP=`date +"%Y%m%d%H%M%Sh"`
+TIMESTAMP=`date +"%Y-%m-%d_%H-%M-%S"`
+DATA_DIR="simulation-logs/${TIMESTAMP}"
 
-echo TIMESTAMP is $TIMESTAMP
+mkdir -p $DATA_DIR
 
-./start_sdr.sh $TIMESTAMP
+echo DATA_DIR is $DATA_DIR
+
+./start_sdr.sh $DATA_DIR
