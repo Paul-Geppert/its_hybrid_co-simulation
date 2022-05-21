@@ -8,18 +8,22 @@ from time import sleep
 from .cv2x_helper import get_sidelink_ip
 
 def main():
-    def enterSendingLoop():
+    def enterSendingLoop(num_packets):
         id = 0
-        while True:
+        for _ in range(num_packets):
             message = str(id).zfill(3) + ";"
             message = message + datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%dT%H:%M:%S.%f")
             cv2x_socket_ns3.sendto(message.encode(), (cv2x_sidelink_addr_ns3, args.cv2x_udp_port))
+            logger.info(f"MEASUREMENT_SENT:{id}")
             id = (id + 1) % 1000
             sleep(0.5)
 
-    def enterReceivingLoop():
+    def enterReceivingLoop(num_packets):
         cv2x_socket_ns3.bind(('', args.cv2x_udp_port))
-        while True:
+
+        num_received = 0
+
+        while num_received < num_packets:
             message = cv2x_socket_ns3.recv(1024)
             recv_time = datetime.datetime.now()
 
@@ -31,8 +35,8 @@ def main():
             time_diff = recv_time - send_time
             time_diff_in_usec = time_diff.seconds * 1e6 + time_diff.microseconds
             
-            # Log delay, prefix with DELAY to filter it from the output file later
-            logger.info(f"DELAY:{id},{time_diff_in_usec}")
+            # Log measurement, prefix with MEASUREMENT_RECEIVE to filter it from the output file later
+            logger.info(f"MEASUREMENT_RECEIVE:{id},{time_diff_in_usec}")
 
 
     parser = argparse.ArgumentParser()
@@ -45,6 +49,9 @@ def main():
     parser.add_argument('--cv2x-udp-port', '-p',
             default=20001,
             help='the port to send C-V2X UDP messages. Default: 20001')
+    parser.add_argument('--num-packets', '-n',
+            default=160,
+            help='the number of packets to send')
     parser.add_argument('--log-file', '-l',
             default='',
             help='the location of the log file. If not specified, stderr is used. Default: stderr is used')
@@ -69,7 +76,7 @@ def main():
     cv2x_sidelink_addr_ns3 = get_sidelink_ip(args.cv2x_ip_base, args.interface_cv2x.encode())
 
     if os.environ["DELAY_ROLE"] == "SENDER":
-        enterSendingLoop()
+        enterSendingLoop(args.num_packets)
     else:
-        enterReceivingLoop()
+        enterReceivingLoop(args.num_packets)
 
