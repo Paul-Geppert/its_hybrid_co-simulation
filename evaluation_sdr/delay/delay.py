@@ -5,8 +5,6 @@ import os
 import socket
 from time import sleep
 
-from .cv2x_helper import get_sidelink_ip
-
 def main():
     def enterSendingLoop(num_packets):
         id = 0
@@ -19,7 +17,7 @@ def main():
             sleep(0.5)
 
     def enterReceivingLoop(num_packets):
-        cv2x_socket_sdr.bind(('', args.cv2x_udp_port))
+        cv2x_socket_sdr.bind((cv2x_sidelink_addr_sdr, args.cv2x_udp_port))
 
         num_received = 0
 
@@ -67,6 +65,7 @@ def main():
 
     logger.info("Using C-V2X via SDR")
     cv2x_socket_sdr = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    cv2x_socket_sdr.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     cv2x_sidelink_addr_sdr = "10.0.2.255"
 
     if os.environ["DELAY_ROLE"] == "SENDER":

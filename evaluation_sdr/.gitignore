@@ -1,2 +1,5 @@
-# Ignore sidelink (manually copy it here)
-sidelink/
+# Simulation Results
+simulation-logs/
+
+# Log files
+srsLTE.backtrace.crash

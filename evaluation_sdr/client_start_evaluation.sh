@@ -2,7 +2,7 @@
 
 export DELAY_ROLE="RECEIVER"
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 1 ]; then
     echo "Illegal number of parameters" >&2
     exit 1
 fi
@@ -15,4 +15,4 @@ do
   sleep 1
 done
 
-python3 -m delay -u -l simulation-logs/$TIMESTAMP/client.log
+python3 -u -m delay -l simulation-logs/$TIMESTAMP/client.log
