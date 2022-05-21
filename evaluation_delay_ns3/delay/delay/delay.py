@@ -1,0 +1,75 @@
+import argparse
+import datetime
+import logging
+import os
+import socket
+from time import sleep
+
+from .cv2x_helper import get_sidelink_ip
+
+def main():
+    def enterSendingLoop():
+        id = 0
+        while True:
+            message = str(id).zfill(3) + ";"
+            message = message + datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%dT%H:%M:%S.%f")
+            cv2x_socket_ns3.sendto(message.encode(), (cv2x_sidelink_addr_ns3, args.cv2x_udp_port))
+            id = (id + 1) % 1000
+            sleep(0.5)
+
+    def enterReceivingLoop():
+        cv2x_socket_ns3.bind(('', args.cv2x_udp_port))
+        while True:
+            message = cv2x_socket_ns3.recv(1024)
+            recv_time = datetime.datetime.now()
+
+            message = message.decode()
+            id, send_time_str = message.split(";")
+            send_time = datetime.datetime.fromisoformat(send_time_str)
+
+            # We expect time diff to not be less than 1 minute
+            time_diff = recv_time - send_time
+            time_diff_in_usec = time_diff.seconds * 1e6 + time_diff.microseconds
+            
+            # Log delay, prefix with DELAY to filter it from the output file later
+            logger.info(f"DELAY:{id},{time_diff_in_usec}")
+
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--interface-cv2x', '-i',
+            default='cv2x',
+            help='the interface to send cv2x messages to. Default: cv2x')
+    parser.add_argument('--cv2x-ip-base', '-b',
+            default='225.0.0.0',
+            help='the CV2X SL IP base to calculate Sidelink IP address. Default: 225.0.0.0')
+    parser.add_argument('--cv2x-udp-port', '-p',
+            default=20001,
+            help='the port to send C-V2X UDP messages. Default: 20001')
+    parser.add_argument('--log-file', '-l',
+            default='',
+            help='the location of the log file. If not specified, stderr is used. Default: stderr is used')
+
+    args = parser.parse_args()
+
+    if len(args.log_file) > 0:
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                            datefmt='%y-%m-%d %H:%M:%S',
+                            filename=args.log_file,
+                            filemode='w')
+    else:
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                            datefmt='%y-%m-%d %H:%M:%S')
+
+    logger = logging.getLogger(f"ns_3_Delay_{os.environ['DELAY_ROLE']}")
+
+    logger.info("Using C-V2X via ns-3")
+    cv2x_socket_ns3 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    cv2x_sidelink_addr_ns3 = get_sidelink_ip(args.cv2x_ip_base, args.interface_cv2x.encode())
+
+    if os.environ["DELAY_ROLE"] == "SENDER":
+        enterSendingLoop()
+    else:
+        enterReceivingLoop()
+
