@@ -15,10 +15,16 @@ class OutputHelper:
         self.output_dir = output_dir
 
         self.average_delay_python = output_dir + "/average_delay_python.csv"
+        self.average_delay_python_img = output_dir + "/average_delay_python.pdf"
+        
         self.average_delay_lteUeNetDevice = output_dir + "/average_delay_lteUeNetDevice.csv"
+        self.average_delay_lteUeNetDevice_img = output_dir + "/average_delay_lteUeNetDevice.pdf"
+
         self.average_delay_lteSpectrumPhy = output_dir + "/average_delay_lteSpectrumPhy.csv"
+        self.average_delay_lteSpectrumPhy_img = output_dir + "/average_delay_lteSpectrumPhy.pdf"
 
         self.packet_reception_rate = output_dir + "/prr.csv"
+        self.packet_reception_rate_img = output_dir + "/prr.pdf"
         
         self.distance = 0
         self.tx_power = 0
@@ -93,24 +99,40 @@ class OutputHelper:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
-        self._plot_average_data(lines)
+        self._plot_average_data(
+            lines,
+            title="Avg. Packet Transmission Time - Application (Python)",
+            label_y="time in ms",
+            output_file=self.average_delay_python_img
+        )
 
     def _create_graphic_average_delay_lteUeNetDevice(self):
         with open(self.average_delay_lteUeNetDevice, "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
-        self._plot_average_data(lines)
+        self._plot_average_data(
+            lines,
+            title="Avg. Packet Transmission Time - LteUeNetDevice",
+            label_y="time in ms",
+            output_file=self.average_delay_lteUeNetDevice_img
+        )
 
     def _create_graphic_packet_reception_rate(self):
         with open(self.packet_reception_rate, "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
-        self._plot_average_data(lines)
+        self._plot_average_data(
+            lines,
+            title="PRR",
+            label_y="PRR",
+            output_file=self.packet_reception_rate_img
+        )
 
-    def _plot_average_data(self, lines):
+    def _plot_average_data(self, lines, title=None, label_x="distance", label_y=None, unit_legend="dBm", output_file=None):
         distinct_tx_powers = set(list(map(lambda l: l.split(",")[1], lines)))
+        distinct_tx_powers = sorted(distinct_tx_powers, key=lambda p: float(p))
 
         all_data_series = []
         labels = []
@@ -127,19 +149,32 @@ class OutputHelper:
                 data_series.append([distance, avg_value])
             data_series = sorted(data_series, key=lambda m: m[0])   # Sort by distance
             all_data_series.append(data_series)
-            labels.append(int(tx_power))
+
+            label = str(int(tx_power))
+            if unit_legend:
+                label = f"{label} {unit_legend}"
+            labels.append(label)
         
         for idx, data_series in enumerate(all_data_series):
             data_x = list(map(lambda d: d[0], data_series))
             data_y = list(map(lambda d: d[1], data_series))
 
             plt.plot(data_x, data_y, label=labels[idx])
+
+        if title:
+            plt.title(title)
+        if label_x:
+            plt.xlabel(label_x)
+        if label_y:
+            plt.ylabel(label_y)
         
         plt.legend()
-        plt.show()
-        # plt.savefig("myImagePDF.pdf", format="pdf", bbox_inches="tight")
 
-    def create_delay_graphic(self, distance, tx_power):
+        if output_file:
+            plt.savefig(output_file, format="pdf")
+        plt.show()
+
+    def create_delay_graphic(self, distance, tx_power, print_to_file=True):
         with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_python.csv", "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
@@ -157,7 +192,14 @@ class OutputHelper:
         data_y = list(map(lambda l: float(l.split(",")[1]), lines))
 
         plt.plot(data_x, data_y, label="e2e LteUeNetDevice")
-        
+
+        plt.title("Transmission time per packet for Application (Python) and LteUeNetDevice")
+        plt.xlabel("message_id")
+        plt.ylabel("time in ms")
+
         plt.legend()
+
+        if print_to_file:
+            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay.pdf", format="pdf")
+
         plt.show()
-        # plt.savefig("myImagePDF.pdf", format="pdf", bbox_inches="tight")
