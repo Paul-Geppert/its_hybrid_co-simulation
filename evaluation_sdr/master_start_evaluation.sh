@@ -21,6 +21,8 @@ curl -X GET localhost:13001/phy/repo > simulation-logs/$TIMESTAMP/master.repo.be
 ntpdate fritz.box > simulation-logs/$TIMESTAMP/master_clock_info_before_evaluation.log
 ntpdate -q fritz.box >> simulation-logs/$TIMESTAMP/master_clock_info_before_evaluation.log
 
+echo "Finished ntp update"
+
 python3 -u -m delay -l simulation-logs/$TIMESTAMP/master.log
 
 curl -X GET localhost:13001/phy/metrics > simulation-logs/$TIMESTAMP/master.metrics.after.json
