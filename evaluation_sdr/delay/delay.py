@@ -25,6 +25,8 @@ def main():
             message = cv2x_socket_sdr.recv(1024)
             recv_time = datetime.datetime.now()
 
+            num_received = num_received + 1
+
             message = message.decode()
             id, send_time_str = message.split(";")
             send_time = datetime.datetime.fromisoformat(send_time_str)
