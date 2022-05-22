@@ -18,6 +18,9 @@ done
 curl -X GET localhost:13002/phy/metrics > simulation-logs/$TIMESTAMP/client.metrics.before.json
 curl -X GET localhost:13002/phy/repo > simulation-logs/$TIMESTAMP/client.repo.before.json
 
+ntpdate fritz.box > simulation-logs/$TIMESTAMP/client_clock_info_before_evaluation.log
+ntpdate -q fritz.box >> simulation-logs/$TIMESTAMP/client_clock_info_before_evaluation.log
+
 python3 -u -m delay -l simulation-logs/$TIMESTAMP/client.log
 
 curl -X GET localhost:13002/phy/metrics > simulation-logs/$TIMESTAMP/client.metrics.after.json
