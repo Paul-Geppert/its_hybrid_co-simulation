@@ -15,4 +15,10 @@ do
   sleep 1
 done
 
+curl -X GET localhost:13001/phy/metrics > simulation-logs/$TIMESTAMP/master.metrics.before.json
+curl -X GET localhost:13001/phy/repo > simulation-logs/$TIMESTAMP/master.repo.before.json
+
 python3 -u -m delay -l simulation-logs/$TIMESTAMP/master.log
+
+curl -X GET localhost:13001/phy/metrics > simulation-logs/$TIMESTAMP/master.metrics.after.json
+curl -X GET localhost:13001/phy/repo > simulation-logs/$TIMESTAMP/master.repo.after.json
