@@ -102,7 +102,7 @@ class OutputHelper:
         self._plot_average_data(
             lines,
             title="Avg. Packet Transmission Time - Application (Python)",
-            label_y="time in ms",
+            label_y="Zeit in ms",
             output_file=self.average_delay_python_img
         )
 
@@ -114,7 +114,7 @@ class OutputHelper:
         self._plot_average_data(
             lines,
             title="Avg. Packet Transmission Time - LteUeNetDevice",
-            label_y="time in ms",
+            label_y="Zeit in ms",
             output_file=self.average_delay_lteUeNetDevice_img
         )
 
@@ -130,7 +130,7 @@ class OutputHelper:
             output_file=self.packet_reception_rate_img
         )
 
-    def _plot_average_data(self, lines, title=None, label_x="distance", label_y=None, unit_legend="dBm", output_file=None):
+    def _plot_average_data(self, lines, title=None, label_x="Distanz", label_y=None, unit_legend="dBm", output_file=None):
         distinct_tx_powers = set(list(map(lambda l: l.split(",")[1], lines)))
         distinct_tx_powers = sorted(distinct_tx_powers, key=lambda p: float(p))
 
@@ -161,8 +161,6 @@ class OutputHelper:
 
             plt.plot(data_x, data_y, label=labels[idx])
 
-        if title:
-            plt.title(title)
         if label_x:
             plt.xlabel(label_x)
         if label_y:
@@ -172,6 +170,9 @@ class OutputHelper:
 
         if output_file:
             plt.savefig(output_file, format="pdf")
+
+        if title:
+            plt.title(title)
         plt.show()
 
     def create_delay_graphic(self, distance, tx_power, print_to_file=True):
@@ -182,7 +183,7 @@ class OutputHelper:
         data_x = list(map(lambda l: int(l.split(",")[0]), lines))
         data_y = list(map(lambda l: float(l.split(",")[1]), lines))
 
-        plt.plot(data_x, data_y, label="e2e Python")
+        plt.plot(data_x, data_y, label="L_simKnoten (Python)")
 
         with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_lteUeNetDevice.csv", "r") as result_file:
             lines = result_file.read().splitlines()
@@ -191,15 +192,15 @@ class OutputHelper:
         data_x = list(map(lambda l: int(l.split(",")[0]), lines))
         data_y = list(map(lambda l: float(l.split(",")[1]), lines))
 
-        plt.plot(data_x, data_y, label="e2e LteUeNetDevice")
+        plt.plot(data_x, data_y, label="L_lteUeNetDevice (ns-3_c-v2x)")
 
-        plt.title("Transmission time per packet for Application (Python) and LteUeNetDevice")
         plt.xlabel("message_id")
-        plt.ylabel("time in ms")
+        plt.ylabel("Zeit in ms")
 
         plt.legend()
 
         if print_to_file:
             plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay.pdf", format="pdf")
 
+        plt.title("Latenz pro Paket für ns-3_c-v2x (LteUeNetDevice) und Simulationsknoten (Python)")
         plt.show()
