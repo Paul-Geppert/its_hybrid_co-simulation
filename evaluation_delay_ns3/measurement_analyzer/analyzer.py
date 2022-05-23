@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from .delay import analyze_delay_python_end_to_end, analyze_delay_pcap_LteUeNetDevice_end_to_end, analyze_delay_pcap_LteSpectrumPhy_end_to_end
-from .prr import analyze_prr
+from .pdr import analyze_pdr
 from .output_helper import OutputHelper
 
 def main():
@@ -22,8 +22,8 @@ def main():
         receiverLteSpectrumPhy_pcap = log_directory + "/ns3_delay_receiver.cv2x.pcap"
         analyze_delay_pcap_LteSpectrumPhy_end_to_end(senderLteSpectrumPhy_pcap, receiverLteSpectrumPhy_pcap, output_helper)
 
-        # Analyze Packet Reception Rate (PRR)
-        analyze_prr(sender_log, receiver_log, output_helper)
+        # Analyze Packet Delivery Rate (PDR)
+        analyze_pdr(sender_log, receiver_log, output_helper)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--results-file', '-f',

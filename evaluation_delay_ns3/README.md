@@ -3,9 +3,9 @@
 ## What will be measured
 
 - Delay between sending and receiving a message
-- Packet Reception Rate (PRR)
+- Packet Delivery Rate (PDR)
 
-PRR = number of received messages / number of sent messages 
+PDR = number of received messages / number of sent messages
 
 ## Configuration details
 

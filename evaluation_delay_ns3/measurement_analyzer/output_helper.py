@@ -23,8 +23,8 @@ class OutputHelper:
         self.average_delay_lteSpectrumPhy = output_dir + "/average_delay_lteSpectrumPhy.csv"
         self.average_delay_lteSpectrumPhy_img = output_dir + "/average_delay_lteSpectrumPhy.pdf"
 
-        self.packet_reception_rate = output_dir + "/prr.csv"
-        self.packet_reception_rate_img = output_dir + "/prr.pdf"
+        self.packet_reception_rate = output_dir + "/pdr.csv"
+        self.packet_reception_rate_img = output_dir + "/pdr.pdf"
         
         self.distance = 0
         self.tx_power = 0
@@ -43,8 +43,8 @@ class OutputHelper:
                 result_file.write("distance,tx_power,avg_delay\n")
 
         if not os.path.exists(self.packet_reception_rate):
-            with open(self.packet_reception_rate, "w") as prr_file:
-                prr_file.write("distance,tx_power,prr\n")
+            with open(self.packet_reception_rate, "w") as pdr_file:
+                pdr_file.write("distance,tx_power,pdr\n")
 
 
     def log_delay(self, message_ids, delays, type: ResultType):
@@ -77,22 +77,22 @@ class OutputHelper:
         avg_result_file.close()
 
 
-    def log_prr(self, packets_send, packets_received):
+    def log_pdr(self, packets_send, packets_received):
         num_packets_sent = len(packets_send[self.num_cold_run:])
         num_packets_received = len(packets_received[self.num_cold_run:])
 
         if num_packets_sent > 0:
-            prr = num_packets_received / num_packets_sent
+            pdr = num_packets_received / num_packets_sent
         else:
-            prr = -1
+            pdr = -1
 
-        with open(self.packet_reception_rate, "a") as prr_file:
-            prr_file.write(f"{self.distance},{self.tx_power},{prr}\n")
+        with open(self.packet_reception_rate, "a") as pdr_file:
+            pdr_file.write(f"{self.distance},{self.tx_power},{pdr}\n")
 
     def create_average_graphics(self):
         self._create_graphic_average_delay_python()
         self._create_graphic_average_delay_lteUeNetDevice()
-        self._create_graphic_packet_reception_rate()
+        self._create_graphic_packet_delivery_rate()
 
     def _create_graphic_average_delay_python(self):
         with open(self.average_delay_python, "r") as result_file:
@@ -118,15 +118,15 @@ class OutputHelper:
             output_file=self.average_delay_lteUeNetDevice_img
         )
 
-    def _create_graphic_packet_reception_rate(self):
+    def _create_graphic_packet_delivery_rate(self):
         with open(self.packet_reception_rate, "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
         self._plot_average_data(
             lines,
-            title="PRR",
-            label_y="PRR",
+            title="PDR",
+            label_y="PDR",
             output_file=self.packet_reception_rate_img
         )
 
