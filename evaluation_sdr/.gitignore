@@ -1,5 +1,6 @@
 # Simulation Results
-simulation-logs/
+simulation-logs*/
+measurement_results/
 
 # Log files
 srsLTE.backtrace.crash
