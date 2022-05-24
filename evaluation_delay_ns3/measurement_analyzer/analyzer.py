@@ -62,7 +62,7 @@ def main():
         analyze_results(log_directory, args.cv2x_udp_port, output_helper)
 
     output_helper.create_average_graphics()
-    output_helper.create_delay_graphic(distance=100, tx_power=20)
+    output_helper.create_delay_graphic(distance=150, tx_power=20)
 
 if __name__ == "__main__":
     try:

@@ -130,7 +130,7 @@ class OutputHelper:
             output_file=self.packet_reception_rate_img
         )
 
-    def _plot_average_data(self, lines, title=None, label_x="Distanz", label_y=None, unit_legend="dBm", output_file=None):
+    def _plot_average_data(self, lines, title=None, label_x="Distanz in m", label_y=None, unit_legend="dBm", output_file=None):
         distinct_tx_powers = set(list(map(lambda l: l.split(",")[1], lines)))
         distinct_tx_powers = sorted(distinct_tx_powers, key=lambda p: float(p))
 
@@ -169,30 +169,30 @@ class OutputHelper:
         plt.legend()
 
         if output_file:
-            plt.savefig(output_file, format="pdf")
+            plt.savefig(output_file, format="pdf", bbox_inches="tight")
 
         if title:
             plt.title(title)
         plt.show()
 
     def create_delay_graphic(self, distance, tx_power, print_to_file=True):
-        with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_python.csv", "r") as result_file:
-            lines = result_file.read().splitlines()
-        lines = lines[1:]
-
-        data_x = list(map(lambda l: int(l.split(",")[0]), lines))
-        data_y = list(map(lambda l: float(l.split(",")[1]), lines))
-
-        plt.plot(data_x, data_y, label="L_simKnoten (Python)")
-
         with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_lteUeNetDevice.csv", "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
-        data_x = list(map(lambda l: int(l.split(",")[0]), lines))
-        data_y = list(map(lambda l: float(l.split(",")[1]), lines))
+        data_x_lteUeNetDevice = list(map(lambda l: int(l.split(",")[0]), lines))
+        data_y_lteUeNetDevice = list(map(lambda l: float(l.split(",")[1]), lines))
 
-        plt.plot(data_x, data_y, label="L_lteUeNetDevice (ns-3_c-v2x)")
+        plt.plot(data_x_lteUeNetDevice, data_y_lteUeNetDevice, label="L_lteUeNetDevice (ns-3_c-v2x)")
+
+        with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_python.csv", "r") as result_file:
+            lines = result_file.read().splitlines()
+        lines = lines[1:]
+
+        data_x_python = list(map(lambda l: int(l.split(",")[0]), lines))
+        data_y_python = list(map(lambda l: float(l.split(",")[1]), lines))
+
+        plt.plot(data_x_python, data_y_python, label="L_simKnoten (Python)")
 
         plt.xlabel("message_id")
         plt.ylabel("Zeit in ms")
@@ -200,7 +200,21 @@ class OutputHelper:
         plt.legend()
 
         if print_to_file:
-            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay.pdf", format="pdf")
+            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay.pdf", format="pdf", bbox_inches="tight")
 
         plt.title("Latenz pro Paket für ns-3_c-v2x (LteUeNetDevice) und Simulationsknoten (Python)")
+        plt.show()
+
+
+        plt.close()
+
+        plt.figure(figsize=(3, 4.8))
+        plt.boxplot([data_y_lteUeNetDevice, data_y_python], labels=["L_lteUeNetDevice", "L_simKnoten"], )
+        # plt.ylabel("Zeit in ms")
+        ax = plt.gca()
+        ax.get_yaxis().set_ticklabels("")
+
+        if print_to_file:
+            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay_boxplot.pdf", format="pdf", bbox_inches="tight")
+
         plt.show()
