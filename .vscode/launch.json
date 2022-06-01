@@ -6,17 +6,17 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/evaluation",
             "program": "${workspaceFolder}/evaluation/evaluation.py",
-            "args": ["--log-level", "DEBUG"],
+            "args": [
+                "--log-level",
+                "DEBUG"
+            ],
             "console": "integratedTerminal",
             "env": {
                 "LD_LIBRARY_PATH": "${env:LD_LIBRARY_PATH}:${workspaceFolder}/ns-3_c-v2x/build/lib/",
                 "PYTHONPATH": "${workspaceFolder}/ns-3_c-v2x/build/bindings/python/:${workspaceFolder}/marvis/:${env:PYTHONPATH}",
-
                 "NS3_EXECUTABLE_PATH": "${workspaceFolder}/ns-3_c-v2x/build/src/fd-net-device:${workspaceFolder}/ns-3_c-v2x/build/src/tap-bridge:${env:NS3_EXECUTABLE_PATH}",
                 "NS3_MODULE_PATH": "${workspaceFolder}/ns-3_c-v2x/build/lib:${env:NS3_MODULE_PATH}",
-
                 "PATH": "${workspaceFolder}/ns-3_c-v2x/build/src/fd-net-device:${workspaceFolder}/ns-3_c-v2x/build/src/tap-bridge:${env:PATH}",
-
                 "COLOREDLOGS_DATE_FORMAT": "%H:%M:%S",
                 "COLOREDLOGS_LOG_FORMAT": "%(asctime)s %(name)-32s %(levelname)-8s %(message)s",
                 "COLOREDLOGS_LOG_LEVEL": "DEBUG",
@@ -28,53 +28,24 @@
             "justMyCode": true
         },
         {
-            "name": "Basic Example",
+            "name": "Evaluation Latency NS-3",
             "type": "python",
             "request": "launch",
-            "cwd": "${workspaceFolder}/marvis/examples",
-            "program": "${workspaceFolder}/marvis/examples/basic_example.py",
+            "cwd": "${workspaceFolder}/evaluation_latency_ns3",
+            "program": "${workspaceFolder}/evaluation_latency_ns3/evaluation_latency_ns3.py",
             "console": "integratedTerminal",
             "env": {
                 "LD_LIBRARY_PATH": "${env:LD_LIBRARY_PATH}:${workspaceFolder}/ns-3_c-v2x/build/lib/",
                 "PYTHONPATH": "${workspaceFolder}/ns-3_c-v2x/build/bindings/python/:${workspaceFolder}/marvis/:${env:PYTHONPATH}",
-
                 "NS3_EXECUTABLE_PATH": "${workspaceFolder}/ns-3_c-v2x/build/src/fd-net-device:${workspaceFolder}/ns-3_c-v2x/build/src/tap-bridge:${env:NS3_EXECUTABLE_PATH}",
                 "NS3_MODULE_PATH": "${workspaceFolder}/ns-3_c-v2x/build/lib:${env:NS3_MODULE_PATH}",
-
                 "PATH": "${workspaceFolder}/ns-3_c-v2x/build/src/fd-net-device:${workspaceFolder}/ns-3_c-v2x/build/src/tap-bridge:${env:PATH}",
-
                 "COLOREDLOGS_DATE_FORMAT": "%H:%M:%S",
                 "COLOREDLOGS_LOG_FORMAT": "%(asctime)s %(name)-32s %(levelname)-8s %(message)s",
                 "COLOREDLOGS_LOG_LEVEL": "DEBUG",
                 "COLOREDLOGS_LEVEL_STYLES": "debug=cyan;warning=yellow;error=red;critical=red,bold",
                 "COLOREDLOGS_AUTO_INSTALL": "true",
                 "PYLXD_WARNINGS": "none",
-            },
-            "sudo": true,
-            "justMyCode": true
-        },
-        {
-            "name": "Wifi Example",
-            "type": "python",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/marvis/examples",
-            "program": "${workspaceFolder}/marvis/examples/wifi_example.py",
-            "console": "integratedTerminal",
-            "env": {
-                "LD_LIBRARY_PATH": "${env:LD_LIBRARY_PATH}:${workspaceFolder}/ns-3_c-v2x/build/lib/",
-                "PYTHONPATH": "${workspaceFolder}/ns-3_c-v2x/build/bindings/python/:${workspaceFolder}/marvis/:${env:PYTHONPATH}",
-
-                "NS3_EXECUTABLE_PATH": "${workspaceFolder}/ns-3_c-v2x/build/src/fd-net-device:${workspaceFolder}/ns-3_c-v2x/build/src/tap-bridge:${env:NS3_EXECUTABLE_PATH}",
-                "NS3_MODULE_PATH": "${workspaceFolder}/ns-3_c-v2x/build/lib:${env:NS3_MODULE_PATH}",
-
-                "PATH": "${workspaceFolder}/ns-3_c-v2x/build/src/fd-net-device:${workspaceFolder}/ns-3_c-v2x/build/src/tap-bridge:${env:PATH}",
-
-                "COLOREDLOGS_DATE_FORMAT": "%H:%M:%S",
-                "COLOREDLOGS_LOG_FORMAT": "%(asctime)s %(name)-32s %(levelname)-8s %(message)s",
-                "COLOREDLOGS_LOG_LEVEL": "DEBUG",
-                "COLOREDLOGS_LEVEL_STYLES": "debug=cyan;warning=yellow;error=red;critical=red,bold",
-                "COLOREDLOGS_AUTO_INSTALL": "true",
-                "PYLXD_WARNINGS": "none"
             },
             "sudo": true,
             "justMyCode": true
