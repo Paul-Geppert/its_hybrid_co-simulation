@@ -1,5 +1,5 @@
 #!/bin/bash
-export DELAY_ROLE="SENDER"
+export LATENCY_ROLE="SENDER"
 
 if [ "$#" -ne 2 ]; then
     echo "Error: Need DISTANCE and GAIN parameter." >&2

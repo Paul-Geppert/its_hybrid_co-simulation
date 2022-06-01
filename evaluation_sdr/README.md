@@ -8,5 +8,5 @@ You can configure the settings in `sdr_evaluation.conf`.
 
 ## What is measured
 
-We measure the same information and metrics as in `evaluation_delay_ns3`. Please check the README there to learn more.
+We measure the same information and metrics as in `evaluation_latency_ns3`. Please check the README there to learn more.
 We log in the same format to be able use the same results analyzer.

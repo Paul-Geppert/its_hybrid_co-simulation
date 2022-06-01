@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DELAY_ROLE="SENDER"
+export LATENCY_ROLE="SENDER"
 
 if [ "$#" -ne 1 ]; then
     echo "Illegal number of parameters" >&2
@@ -23,7 +23,7 @@ ntpdate -q fritz.box >> simulation-logs/$TIMESTAMP/master_clock_info_before_eval
 
 echo "Finished ntp update"
 
-python3 -u -m delay -l simulation-logs/$TIMESTAMP/master.log
+python3 -u -m latency -l simulation-logs/$TIMESTAMP/master.log
 
 curl -X GET localhost:13001/phy/metrics > simulation-logs/$TIMESTAMP/master.metrics.after.json
 curl -X GET localhost:13001/phy/repo > simulation-logs/$TIMESTAMP/master.repo.after.json

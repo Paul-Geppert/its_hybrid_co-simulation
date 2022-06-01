@@ -63,14 +63,14 @@ def main():
                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                             datefmt='%y-%m-%d %H:%M:%S')
 
-    logger = logging.getLogger(f"SDR_Delay_{os.environ['DELAY_ROLE']}")
+    logger = logging.getLogger(f"SDR_Latency_{os.environ['LATENCY_ROLE']}")
 
     logger.info("Using C-V2X via SDR")
     cv2x_socket_sdr = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     cv2x_socket_sdr.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     cv2x_sidelink_addr_sdr = "10.0.2.255"
 
-    if os.environ["DELAY_ROLE"] == "SENDER":
+    if os.environ["LATENCY_ROLE"] == "SENDER":
         enterSendingLoop(args.num_packets)
     else:
         enterReceivingLoop(args.num_packets)
