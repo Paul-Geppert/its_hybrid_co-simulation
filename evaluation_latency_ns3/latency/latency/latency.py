@@ -27,6 +27,8 @@ def main():
             message = cv2x_socket_ns3.recv(1024)
             recv_time = datetime.datetime.now()
 
+            num_received = num_received + 1
+
             message = message.decode()
             id, send_time_str = message.split(";")
             send_time = datetime.datetime.fromisoformat(send_time_str)
@@ -69,13 +71,13 @@ def main():
                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                             datefmt='%y-%m-%d %H:%M:%S')
 
-    logger = logging.getLogger(f"ns_3_Delay_{os.environ['DELAY_ROLE']}")
+    logger = logging.getLogger(f"ns_3_Latency_{os.environ['LATENCY_ROLE']}")
 
     logger.info("Using C-V2X via ns-3")
     cv2x_socket_ns3 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     cv2x_sidelink_addr_ns3 = get_sidelink_ip(args.cv2x_ip_base, args.interface_cv2x.encode())
 
-    if os.environ["DELAY_ROLE"] == "SENDER":
+    if os.environ["LATENCY_ROLE"] == "SENDER":
         enterSendingLoop(args.num_packets)
     else:
         enterReceivingLoop(args.num_packets)

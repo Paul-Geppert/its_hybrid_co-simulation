@@ -14,14 +14,14 @@ class OutputHelper:
         self.num_cold_run = num_cold_run
         self.output_dir = output_dir
 
-        self.average_delay_python = output_dir + "/average_delay_python.csv"
-        self.average_delay_python_img = output_dir + "/average_delay_python.pdf"
+        self.average_latency_python = output_dir + "/average_latency_python.csv"
+        self.average_latency_python_img = output_dir + "/average_latency_python.pdf"
         
-        self.average_delay_lteUeNetDevice = output_dir + "/average_delay_lteUeNetDevice.csv"
-        self.average_delay_lteUeNetDevice_img = output_dir + "/average_delay_lteUeNetDevice.pdf"
+        self.average_latency_lteUeNetDevice = output_dir + "/average_latency_lteUeNetDevice.csv"
+        self.average_latency_lteUeNetDevice_img = output_dir + "/average_latency_lteUeNetDevice.pdf"
 
-        self.average_delay_lteSpectrumPhy = output_dir + "/average_delay_lteSpectrumPhy.csv"
-        self.average_delay_lteSpectrumPhy_img = output_dir + "/average_delay_lteSpectrumPhy.pdf"
+        self.average_latency_lteSpectrumPhy = output_dir + "/average_latency_lteSpectrumPhy.csv"
+        self.average_latency_lteSpectrumPhy_img = output_dir + "/average_latency_lteSpectrumPhy.pdf"
 
         self.packet_reception_rate = output_dir + "/pdr.csv"
         self.packet_reception_rate_img = output_dir + "/pdr.pdf"
@@ -32,46 +32,46 @@ class OutputHelper:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        if not os.path.exists(self.average_delay_python):
-            with open(self.average_delay_python, "w") as result_file:
-                result_file.write("distance,tx_power,avg_delay\n")
-        if not os.path.exists(self.average_delay_lteUeNetDevice):
-            with open(self.average_delay_lteUeNetDevice, "w") as result_file:
-                result_file.write("distance,tx_power,avg_delay\n")
-        if not os.path.exists(self.average_delay_lteSpectrumPhy):
-            with open(self.average_delay_lteSpectrumPhy, "w") as result_file:
-                result_file.write("distance,tx_power,avg_delay\n")
+        if not os.path.exists(self.average_latency_python):
+            with open(self.average_latency_python, "w") as result_file:
+                result_file.write("distance,tx_power,avg_latency\n")
+        if not os.path.exists(self.average_latency_lteUeNetDevice):
+            with open(self.average_latency_lteUeNetDevice, "w") as result_file:
+                result_file.write("distance,tx_power,avg_latency\n")
+        if not os.path.exists(self.average_latency_lteSpectrumPhy):
+            with open(self.average_latency_lteSpectrumPhy, "w") as result_file:
+                result_file.write("distance,tx_power,avg_latency\n")
 
         if not os.path.exists(self.packet_reception_rate):
             with open(self.packet_reception_rate, "w") as pdr_file:
                 pdr_file.write("distance,tx_power,pdr\n")
 
 
-    def log_delay(self, message_ids, delays, type: ResultType):
+    def log_latency(self, message_ids, latencies, type: ResultType):
         if type == ResultType.PYTHON:
-            result_file = open(self.output_dir + f"/dist_{self.distance}_txPower_{self.tx_power}_delay_python.csv", "w")
-            avg_result_file = open(self.average_delay_python, "a")
+            result_file = open(self.output_dir + f"/dist_{self.distance}_txPower_{self.tx_power}_latency_python.csv", "w")
+            avg_result_file = open(self.average_latency_python, "a")
         elif type == ResultType.LTE_UE_NET_DEVICE:
-            result_file = open(self.output_dir + f"/dist_{self.distance}_txPower_{self.tx_power}_delay_lteUeNetDevice.csv", "w")
-            avg_result_file = open(self.average_delay_lteUeNetDevice, "a")
+            result_file = open(self.output_dir + f"/dist_{self.distance}_txPower_{self.tx_power}_latency_lteUeNetDevice.csv", "w")
+            avg_result_file = open(self.average_latency_lteUeNetDevice, "a")
         elif type == ResultType.LTE_SPECTRUM_PHY:
-            result_file = open(self.output_dir + f"/dist_{self.distance}_txPower_{self.tx_power}_delay_lteSpectrumPhy.csv", "w")
-            avg_result_file = open(self.average_delay_lteSpectrumPhy, "a")
+            result_file = open(self.output_dir + f"/dist_{self.distance}_txPower_{self.tx_power}_latency_lteSpectrumPhy.csv", "w")
+            avg_result_file = open(self.average_latency_lteSpectrumPhy, "a")
         else:
             return
 
         hot_message_ids = message_ids[self.num_cold_run:]
-        hot_delays = delays[self.num_cold_run:]
+        hot_latencies = latencies[self.num_cold_run:]
         
-        result_file.write("message_id,delay\n")
-        for id, delay in zip(hot_message_ids, hot_delays):
-            result_file.write(f"{id},{delay}\n")
+        result_file.write("message_id,latency\n")
+        for id, latency in zip(hot_message_ids, hot_latencies):
+            result_file.write(f"{id},{latency}\n")
 
-        if len(hot_delays) > 0:
-            avg_delay = sum(hot_delays) / len(hot_delays)
+        if len(hot_latencies) > 0:
+            avg_latency = sum(hot_latencies) / len(hot_latencies)
         else:
-            avg_delay = -1
-        avg_result_file.write(f"{self.distance},{self.tx_power},{avg_delay}\n")
+            avg_latency = -1
+        avg_result_file.write(f"{self.distance},{self.tx_power},{avg_latency}\n")
 
         result_file.close()
         avg_result_file.close()
@@ -90,12 +90,12 @@ class OutputHelper:
             pdr_file.write(f"{self.distance},{self.tx_power},{pdr}\n")
 
     def create_average_graphics(self):
-        self._create_graphic_average_delay_python()
-        self._create_graphic_average_delay_lteUeNetDevice()
+        self._create_graphic_average_latency_python()
+        self._create_graphic_average_latency_lteUeNetDevice()
         self._create_graphic_packet_delivery_rate()
 
-    def _create_graphic_average_delay_python(self):
-        with open(self.average_delay_python, "r") as result_file:
+    def _create_graphic_average_latency_python(self):
+        with open(self.average_latency_python, "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
@@ -103,11 +103,11 @@ class OutputHelper:
             lines,
             title="Avg. Packet Transmission Time - Application (Python)",
             label_y="Zeit in ms",
-            output_file=self.average_delay_python_img
+            output_file=self.average_latency_python_img
         )
 
-    def _create_graphic_average_delay_lteUeNetDevice(self):
-        with open(self.average_delay_lteUeNetDevice, "r") as result_file:
+    def _create_graphic_average_latency_lteUeNetDevice(self):
+        with open(self.average_latency_lteUeNetDevice, "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
@@ -115,7 +115,7 @@ class OutputHelper:
             lines,
             title="Avg. Packet Transmission Time - LteUeNetDevice",
             label_y="Zeit in ms",
-            output_file=self.average_delay_lteUeNetDevice_img
+            output_file=self.average_latency_lteUeNetDevice_img
         )
 
     def _create_graphic_packet_delivery_rate(self):
@@ -175,8 +175,8 @@ class OutputHelper:
             plt.title(title)
         plt.show()
 
-    def create_delay_graphic(self, distance, tx_power, print_to_file=True):
-        with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_lteUeNetDevice.csv", "r") as result_file:
+    def create_latency_graphic(self, distance, tx_power, print_to_file=True):
+        with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_latency_lteUeNetDevice.csv", "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
@@ -185,7 +185,7 @@ class OutputHelper:
 
         plt.plot(data_x_lteUeNetDevice, data_y_lteUeNetDevice, label="L_lteUeNetDevice (ns-3_c-v2x)")
 
-        with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_delay_python.csv", "r") as result_file:
+        with open(self.output_dir + f"/dist_{distance}_txPower_{tx_power}_latency_python.csv", "r") as result_file:
             lines = result_file.read().splitlines()
         lines = lines[1:]
 
@@ -200,7 +200,7 @@ class OutputHelper:
         plt.legend()
 
         if print_to_file:
-            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay.pdf", format="pdf", bbox_inches="tight")
+            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_latency.pdf", format="pdf", bbox_inches="tight")
 
         plt.title("Latenz pro Paket für ns-3_c-v2x (LteUeNetDevice) und Simulationsknoten (Python)")
         plt.show()
@@ -215,6 +215,6 @@ class OutputHelper:
         ax.get_yaxis().set_ticklabels("")
 
         if print_to_file:
-            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_delay_boxplot.pdf", format="pdf", bbox_inches="tight")
+            plt.savefig(f"{self.output_dir}/dist_{distance}_txPower_{tx_power}_latency_boxplot.pdf", format="pdf", bbox_inches="tight")
 
         plt.show()

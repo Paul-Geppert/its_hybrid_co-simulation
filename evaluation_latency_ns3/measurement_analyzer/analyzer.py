@@ -1,34 +1,34 @@
 import argparse
 import logging
 
-from .delay import analyze_delay_python_end_to_end, analyze_delay_pcap_LteUeNetDevice_end_to_end, analyze_delay_pcap_LteSpectrumPhy_end_to_end
+from .latency import analyze_latency_python_end_to_end, analyze_latency_pcap_LteUeNetDevice_end_to_end, analyze_latency_pcap_LteSpectrumPhy_end_to_end
 from .pdr import analyze_pdr
 from .output_helper import OutputHelper
 
 def main():
     def analyze_results(log_directory, cv2x_udp_port, output_helper):
-        sender_log = log_directory + "/ns3_delay_sender.stderr.log"
-        receiver_log = log_directory + "/ns3_delay_receiver.stderr.log"
+        sender_log = log_directory + "/ns3_latency_sender.stderr.log"
+        receiver_log = log_directory + "/ns3_latency_receiver.stderr.log"
 
-        # Analyze delay in Python end-to-end
-        analyze_delay_python_end_to_end(receiver_log, output_helper)
+        # Analyze latency in Python end-to-end
+        analyze_latency_python_end_to_end(receiver_log, output_helper)
 
-        # Analyze delay from PCAP-Files (End-to-End LteUeNetDevice and End-to-End LteSpectrumPhy)
-        senderLteUeNetDevice_pcap = log_directory + "/simple-ns3_delay_sender.cv2x.pcap"
-        receiverLteUeNetDevice_pcap = log_directory + "/simple-ns3_delay_receiver.cv2x.pcap"
-        analyze_delay_pcap_LteUeNetDevice_end_to_end(senderLteUeNetDevice_pcap, receiverLteUeNetDevice_pcap, cv2x_udp_port, output_helper)
+        # Analyze latency from PCAP-Files (End-to-End LteUeNetDevice and End-to-End LteSpectrumPhy)
+        senderLteUeNetDevice_pcap = log_directory + "/simple-ns3_latency_sender.cv2x.pcap"
+        receiverLteUeNetDevice_pcap = log_directory + "/simple-ns3_latency_receiver.cv2x.pcap"
+        analyze_latency_pcap_LteUeNetDevice_end_to_end(senderLteUeNetDevice_pcap, receiverLteUeNetDevice_pcap, cv2x_udp_port, output_helper)
 
-        senderLteSpectrumPhy_pcap = log_directory + "/ns3_delay_sender.cv2x.pcap"
-        receiverLteSpectrumPhy_pcap = log_directory + "/ns3_delay_receiver.cv2x.pcap"
-        analyze_delay_pcap_LteSpectrumPhy_end_to_end(senderLteSpectrumPhy_pcap, receiverLteSpectrumPhy_pcap, output_helper)
+        senderLteSpectrumPhy_pcap = log_directory + "/ns3_latency_sender.cv2x.pcap"
+        receiverLteSpectrumPhy_pcap = log_directory + "/ns3_latency_receiver.cv2x.pcap"
+        analyze_latency_pcap_LteSpectrumPhy_end_to_end(senderLteSpectrumPhy_pcap, receiverLteSpectrumPhy_pcap, output_helper)
 
         # Analyze Packet Delivery Rate (PDR)
         analyze_pdr(sender_log, receiver_log, output_helper)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--results-file', '-f',
-        default="evaluation_delay_ns3_configs.log",
-        help='the file to extract and analyze delay times from.')
+        default="evaluation_latency_ns3_configs.log",
+        help='the file to extract and analyze latency times from.')
     parser.add_argument('--output-dir', '-o',
         default="measurement_results",
         help='the directory to write the results to.')
@@ -62,7 +62,7 @@ def main():
         analyze_results(log_directory, args.cv2x_udp_port, output_helper)
 
     output_helper.create_average_graphics()
-    output_helper.create_delay_graphic(distance=150, tx_power=20)
+    output_helper.create_latency_graphic(distance=150, tx_power=20)
 
 if __name__ == "__main__":
     try:

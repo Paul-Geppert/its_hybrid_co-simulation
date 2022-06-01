@@ -13,20 +13,20 @@ def run_scenario(distance, tx_power):
     # 12.0.0.0 / 255.255.255.252
     net = Network("15.0.0.0", "255.255.0.0")
 
-    ns3_delay_sender = DockerNode('ns3_delay_sender', docker_build_dir='./delay', environment_variables={"DELAY_ROLE": "SENDER"})
-    ns3_delay_receiver = DockerNode('ns3_delay_receiver', docker_build_dir='./delay', environment_variables={"DELAY_ROLE": "RECEIVER"})
+    ns3_latency_sender = DockerNode('ns3_latency_sender', docker_build_dir='./latency', environment_variables={"LATENCY_ROLE": "SENDER"})
+    ns3_latency_receiver = DockerNode('ns3_latency_receiver', docker_build_dir='./latency', environment_variables={"LATENCY_ROLE": "RECEIVER"})
 
-    ns3_delay_sender.set_position(0, 0, 0)
-    ns3_delay_receiver.set_position(0, distance, 0)
+    ns3_latency_sender.set_position(0, 0, 0)
+    ns3_latency_receiver.set_position(0, distance, 0)
 
     cv2x_channel = net.create_channel(channel_type=CV2XChannel, tx_power=tx_power)
 
-    cv2x_channel.connect(ns3_delay_sender, ifname="cv2x")
-    cv2x_channel.connect(ns3_delay_receiver, ifname="cv2x")
+    cv2x_channel.connect(ns3_latency_sender, ifname="cv2x")
+    cv2x_channel.connect(ns3_latency_receiver, ifname="cv2x")
 
     scenario.add_network(net)
     
-    conf_file = open("evaluation_delay_ns3_configs.log", "a")
+    conf_file = open("evaluation_latency_ns3_configs.log", "a")
 
     with scenario as sim:
         print("Log directory is", sim.log_directory)
@@ -36,7 +36,7 @@ def run_scenario(distance, tx_power):
 
 def main():
 
-    with open("evaluation_delay_ns3_configs.log", "w") as conf_file:
+    with open("evaluation_latency_ns3_configs.log", "w") as conf_file:
         conf_file.write("distance,tx_power,log_directory\n")
 
     distances = [10, 50, 100, 150, 250, 500, 750, 850, 1000, 1400]

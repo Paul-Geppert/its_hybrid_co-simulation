@@ -10,6 +10,6 @@ RUN apt update \
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-COPY delay/ /delay/
+COPY latency/ /latency/
 
-CMD [ "python3", "-m", "delay" ]
+CMD [ "python3", "-m", "latency" ]

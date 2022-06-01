@@ -1,4 +1,4 @@
-from .delay import main
+from .latency import main
 
 if __name__ == "__main__":
     try:
