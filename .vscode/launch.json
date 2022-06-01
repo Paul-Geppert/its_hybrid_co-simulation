@@ -1,11 +1,11 @@
 {
     "configurations": [
         {
-            "name": "Evaluation",
+            "name": "Scenario",
             "type": "python",
             "request": "launch",
-            "cwd": "${workspaceFolder}/evaluation",
-            "program": "${workspaceFolder}/evaluation/evaluation.py",
+            "cwd": "${workspaceFolder}/scenario",
+            "program": "${workspaceFolder}/scenario/scenario.py",
             "args": [
                 "--log-level",
                 "DEBUG"
