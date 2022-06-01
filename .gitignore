@@ -4,6 +4,12 @@ DlPdcpStats.txt
 DlRlcStats.txt
 UlPdcpStats.txt
 UlRlcStats.txt
+SlPscchRxPhyStats.txt
+SlRxPhyStats.txt
+SlSchUeMacV2xStats.txt
+SlUeV2xMacStats.txt
+
+simulation-logs/
 
 # Python Cache
 __pycache__/
